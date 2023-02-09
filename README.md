@@ -1,6 +1,6 @@
 ## Hypergraph Convolution on Nodes-Hyperedges (HCNH)
  
-Hypergraph Convolution on Nodes-Hyperedges Network for Semi-Supervised Node Classification,ACM Transactions on Knowledge Discovery from Data (TKDD), 2022 
+Hypergraph Convolution on Nodes-Hyperedges Network for Semi-Supervised Node Classification, ACM Transactions on Knowledge Discovery from Data (TKDD), 2022  
 Authors: Hanrui Wu, Michael K. Ng  
 
 Please cite our paper if you find this code helpful to your research:  
