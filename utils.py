@@ -6,15 +6,8 @@ import random
 import os
 import scipy.io as scio
 
-# ------------------------------------
-# Some functions borrowed from:
-# https://github.com/tkipf/pygcn and
-# https://github.com/tkipf/gae
-# ------------------------------------
-
 
 class dotdict(dict):
-    """dot.notation access to dictionary attributes"""
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__

@@ -65,9 +65,9 @@ def training(data, args, s = 2021):
         cost_val.append(loss_val.item())
         acc_val = accuracy(output[idx_val], labels[idx_val])
         
-        if epoch > args.early_stop and cost_val[-1] > np.mean(cost_val[-(args.early_stop+1):-1]):
-            print("Early stopping...")
-            break
+#        if epoch > args.early_stop and cost_val[-1] > np.mean(cost_val[-(args.early_stop+1):-1]):
+#            print("Early stopping...")
+#            break
         
 
 #         print('Epoch: {:04d}'.format(epoch+1),
