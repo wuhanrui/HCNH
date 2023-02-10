@@ -72,7 +72,7 @@ class GraphConvolution(Module):
     
 class HCNH(nn.Module):
 
-	"""
+    """
     Hypergraph Convolution on Nodes-Hyperedges (HCNH), https://dl.acm.org/doi/abs/10.1145/3494567
     """
 
