@@ -27,7 +27,6 @@ def training(data, args, s = 2021):
     Y = torch.from_numpy(data.Y.toarray()).float().to_sparse().cuda()
     
     idx_train = torch.LongTensor(data.idx_train).cuda()
-    idx_val = torch.LongTensor(data.idx_val).cuda()
     idx_test = torch.LongTensor(data.idx_test).cuda()
     labels = torch.LongTensor(np.where(data.labels)[1]).cuda()
 
@@ -45,37 +44,16 @@ def training(data, args, s = 2021):
     
     cost_val = []
     for epoch in range(epochs):
-        t = time.time()
         model.train()
         recovered, output, x, y = model(X, H_trainX_norm, Y, H_trainY_norm)
         loss1 = F.nll_loss(output[idx_train], labels[idx_train])
         loss2 = criteon(recovered, H_trainX)
         
         loss_train = loss1 + gamma * loss2
-        acc_train = accuracy(output[idx_train], labels[idx_train])
         
         optimizer.zero_grad()
         loss_train.backward()
         optimizer.step()
-        
-        cur_loss = loss_train.item()
-        
-        
-        loss_val = F.nll_loss(output[idx_val], labels[idx_val]) + gamma * loss2
-        cost_val.append(loss_val.item())
-        acc_val = accuracy(output[idx_val], labels[idx_val])
-        
-#        if epoch > args.early_stop and cost_val[-1] > np.mean(cost_val[-(args.early_stop+1):-1]):
-#            print("Early stopping...")
-#            break
-        
-
-#         print('Epoch: {:04d}'.format(epoch+1),
-#               'loss_train: {:.4f}'.format(loss_train.item()),
-#               'acc_train: {:.4f}'.format(acc_train.item()),
-#               'loss_val: {:.4f}'.format(loss_val.item()),
-#               'acc_val: {:.4f}'.format(acc_val.item()),
-#               'time: {:.4f}s'.format(time.time() - t))
             
         
     # Test
@@ -85,7 +63,7 @@ def training(data, args, s = 2021):
         recovered, output, x, y = model(X, H_trainX_norm, Y, H_trainY_norm)
         loss_test = F.nll_loss(output[idx_test], labels[idx_test])
         acc_test = accuracy(output[idx_test], labels[idx_test])
-        print("Test set results:", "acc_val: {:.4f}".format(acc_val.item()), "acc_test: {:.4f}".format(acc_test.item()),)
+        print("Test set results:", "acc_test: {:.4f}".format(acc_test.item()))
         
     return acc_test.item()
 
@@ -102,7 +80,7 @@ if __name__ == '__main__':
     os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
     device = torch.cuda.current_device()
     
-    H, X, Y, labels, idx_train_list, idx_val_list = load_data(setting.dataname)
+    H, X, Y, labels, idx_train_list, idx_test_list = load_data(setting.dataname)
     
     H_trainX = H.copy()
     H_trainY = H_trainX.transpose()
@@ -113,8 +91,7 @@ if __name__ == '__main__':
     acc_test_list = []
     for trial in range(len(idx_train_list)):
         idx_train = idx_train_list[trial]
-        idx_val = idx_val_list[trial]
-        idx_test = np.copy(idx_val)
+        idx_test = idx_test_list[trial]
     
         data = dotdict()
         args = dotdict()
@@ -126,14 +103,12 @@ if __name__ == '__main__':
         data.H_trainY_norm = H_trainY_norm
         data.labels = labels
         data.idx_train = idx_train
-        data.idx_val = idx_val
         data.idx_test = idx_test
         data.n_class = labels.shape[1]
 
 
         dim_hidden = 128
         epochs = 300
-        early = 100
         seed = 2021
         
         if setting.dataname == 'pubmed':            
@@ -152,7 +127,6 @@ if __name__ == '__main__':
         args.dim_hidden = dim_hidden
         args.weight_decay = weight_decay
         args.epochs = epochs
-        args.early_stop = early
         args.learning_rate = learning_rate
         args.gamma = gamma
 
